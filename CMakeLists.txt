@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 3.0.0)
+project(opengl VERSION 0.1.0)
+
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/runtime)
+include_directories("/usr/local/include" ${PROJECT_SOURCE_DIR}/include)
+link_directories("/usr/local/lib")
+# file(GLOB_RECURSE SOURCE "source/*.cpp" "source/*.c")
+add_executable(opengl main.cpp glad.c ${SOURCE})
+target_link_libraries(opengl PUBLIC glfw.3)

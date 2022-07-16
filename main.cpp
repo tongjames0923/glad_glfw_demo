@@ -13,11 +13,11 @@ const unsigned int SCR_HEIGHT = 600;
 int program;
 int draw(GLFWwindow *window)
 {
-        s.useShader();
+    s.useShader();
     float timeValue = glfwGetTime();
     float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
     int vertexColorLocation = glGetUniformLocation(program, "ourColor");
-    glUniform3f(vertexColorLocation,0.0f, greenValue, 0.0f);
+    glUniform3f(vertexColorLocation, 0.0f, greenValue, 0.0f);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     return GLWindow::DRAW_CONTINUTE;
 }
@@ -29,13 +29,13 @@ int main(int argc, char *argv[])
     float vertices[] = {
         // positions         // colors
         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        0.0f, 0.5f, 0.0f,    // top
+        -0.5f, -0.5f, 0.0f, // bottom left
+        0.0f, 0.5f, 0.0f,   // top
     };
-        s.input("../shaders/baseShader.frag");
-        program=s.getId();
+    s.input("../shaders/baseShader.frag");
+    program = s.getId();
     s.GenVertexBuffer(vertices, 3 * 3, GL_ARRAY_BUFFER);
-    s.enableVertexBuffer(3,3);
+    s.enableVertexBuffer(3, 3);
     window.draw(draw);
     return EXIT_SUCCESS;
 }

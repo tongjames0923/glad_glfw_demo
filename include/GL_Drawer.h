@@ -104,12 +104,29 @@ public:
     {
         return VBO;
     }
-    void GenVertexBuffer(float *data,int len, int bufferType, int usage = GL_STATIC_DRAW)
+    unsigned int getId()
+    {
+        return id;
+    }
+    void setBool(const std::string &name, bool value) const
+    {
+        glUniform1i(glGetUniformLocation(id, name.c_str()), (int)value);
+    }
+    void setInt(const std::string &name, int value) const
+    {
+        glUniform1i(glGetUniformLocation(id, name.c_str()), value);
+    }
+    void setFloat(const std::string &name, float value) const
+    {
+        glUniform1f(glGetUniformLocation(id, name.c_str()), value);
+    }
+    void GenVertexBuffer(float *data, int len, int bufferType, int usage = GL_STATIC_DRAW)
     {
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
         glBindVertexArray(VAO);
+        
         // GL_ARRAY_BUFFER	Vertex attributes
         // GL_ATOMIC_COUNTER_BUFFER	Atomic counter storage
         // GL_COPY_READ_BUFFER	Buffer copy source
@@ -128,11 +145,11 @@ public:
 
         // GL_STREAM_DRAW, GL_STREAM_READ, GL_STREAM_COPY, GL_STATIC_DRAW, GL_STATIC_READ, GL_STATIC_COPY, GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, or GL_DYNAMIC_COPY
 
-        glBufferData(bufferType, len*sizeof(float), data, usage);
+        glBufferData(bufferType, len * sizeof(float), data, usage);
     }
-    void enableVertexBuffer(int per,int stride, int index = 0,int offset=0)
+    void enableVertexBuffer(int per, int stride, int index = 0, int offset = 0)
     {
-        glVertexAttribPointer(index, per, GL_FLOAT, GL_FALSE, stride* sizeof(float), (void *)(offset*sizeof(float)));
+        glVertexAttribPointer(index, per, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *)(offset * sizeof(float)));
         glEnableVertexAttribArray(index);
     }
 

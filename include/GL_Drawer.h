@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GL_DRAWER_H
+#define GL_DRAWER_H
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdexcept>
@@ -23,7 +24,13 @@ public:
     void createWindow(int width, int height, const char *title, GLFWmonitor *monitor = NULL, GLFWwindow *share = NULL);
     void draw(drawCallback callback);
 };
-
+static void enableHighVersion()
+{
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // for mac
+}
 class Shader
 {
 private:
@@ -44,3 +51,5 @@ public:
     void input(const string &filepath);
     void useShader();
 };
+
+#endif // !GL_DRAWER_H

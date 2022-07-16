@@ -21,13 +21,14 @@ static void initOpenGL()
     {
         if (!glfwInit())
             throw std::runtime_error("glfw fail");
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // for mac
+        // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // for mac
         isInit = true;
     }
 }
+
 GLWindow::GLWindow()
 {
     if (!isInit)
@@ -46,7 +47,6 @@ int GLWindow::setWindowSizeCallBack(windowSizeCallback callback)
 }
 void GLWindow::createWindow(int width, int height, const char *title, GLFWmonitor *monitor, GLFWwindow *share)
 {
-
     //创建一个窗口对象
     window = glfwCreateWindow(width, height, title, monitor, share);
     if (window == nullptr)
@@ -64,14 +64,14 @@ void GLWindow::createWindow(int width, int height, const char *title, GLFWmonito
 }
 void GLWindow::draw(drawCallback callback)
 {
+
     if (window != nullptr)
     {
         int code = DRAW_CONTINUTE;
         while (!glfwWindowShouldClose(window) && code != DRAW_EXIT)
         {
             glClear(GL_COLOR_BUFFER_BIT);
-            code = callback(window);
-            // 检查并调用事件，交换缓冲
+            code = callback(window); // 检查并调用事件，交换缓冲
             glfwSwapBuffers(window); //检查触发事件
             glfwPollEvents();        //交换颜色缓冲
         }
@@ -145,7 +145,6 @@ void Shader::enableVertexBuffer(int per, int stride, int index, int offset)
 void Shader::input(const string &filepath)
 {
     ShaderSourceData source = readShader(filepath);
-
     id = createShader(source.vertex, source.fragment);
     hasShader = true;
 }

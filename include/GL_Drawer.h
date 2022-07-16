@@ -128,11 +128,11 @@ public:
 
         // GL_STREAM_DRAW, GL_STREAM_READ, GL_STREAM_COPY, GL_STATIC_DRAW, GL_STATIC_READ, GL_STATIC_COPY, GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, or GL_DYNAMIC_COPY
 
-        glBufferData(bufferType, len*sizeof(data), data, usage);
+        glBufferData(bufferType, len*sizeof(float), data, usage);
     }
-    void enableVertexBuffer(int per, int index = 0)
+    void enableVertexBuffer(int per,int stride, int index = 0,int offset=0)
     {
-        glVertexAttribPointer(index, per, GL_FLOAT, GL_FALSE, per * sizeof(float), (void *)0);
+        glVertexAttribPointer(index, per, GL_FLOAT, GL_FALSE, stride* sizeof(float), (void *)(offset*sizeof(float)));
         glEnableVertexAttribArray(index);
     }
 

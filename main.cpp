@@ -20,12 +20,16 @@ int main(int argc, char *argv[])
     GLWindow window;
     //glfwSetErrorCallback(glfw_error_callback);
     window.createWindow(SCR_WIDTH, SCR_HEIGHT, "opengl");
-    float pos[] = {-0.5f, -0.5f,
-                   0, 0.5f,
-                   0.5f, -0.5f};
+float vertices[] = {
+        // positions         // colors
+         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
+         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top 
+    };
                    Shader s("../shaders/baseShader.frag");
-                   s.GenVertexBuffer(pos,6,GL_ARRAY_BUFFER);
-                   s.enableVertexBuffer(2);
+                   s.GenVertexBuffer(vertices,6*3,GL_ARRAY_BUFFER);
+                   s.enableVertexBuffer(3,6);
+                   s.enableVertexBuffer(3,6,1,3);
                    s.useShader();
     window.draw(draw);
     return EXIT_SUCCESS;

@@ -36,6 +36,10 @@ GLWindow::GLWindow()
         initOpenGL();
     }
 }
+void GLWindow::useShader(const Shader &s)
+{
+    glUseProgram(s.getId());
+}
 int GLWindow::setWindowSizeCallBack(windowSizeCallback callback)
 {
     if (window != nullptr)
@@ -85,36 +89,19 @@ Shader::Shader(const string &filepath)
 Shader::Shader()
 {
 }
-unsigned int Shader::getVAO()
+unsigned int Shader::getVAO() const
 {
     return VAO;
 }
-unsigned int Shader::getVBO()
-{
-    return VBO;
-}
-unsigned int Shader::getId()
+unsigned int Shader::getId() const
 {
     return id;
 }
-void Shader::setBool(const std::string &name, bool value) const
-{
-    glUniform1i(glGetUniformLocation(id, name.c_str()), (int)value);
-}
-void Shader::setInt(const std::string &name, int value) const
-{
-    glUniform1i(glGetUniformLocation(id, name.c_str()), value);
-}
-void Shader::setFloat(const std::string &name, float value) const
-{
-    glUniform1f(glGetUniformLocation(id, name.c_str()), value);
-}
-void Shader::GenVertexBuffer(float *data, int len, int bufferType, int usage)
+void Shader::GenVertexArray()
 {
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
+    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 
     // GL_ARRAY_BUFFER	Vertex attributes
     // GL_ATOMIC_COUNTER_BUFFER	Atomic counter storage
@@ -130,11 +117,17 @@ void Shader::GenVertexBuffer(float *data, int len, int bufferType, int usage)
     // GL_TEXTURE_BUFFER	Texture data buffer
     // GL_TRANSFORM_FEEDBACK_BUFFER	Transform feedback buffer
     // GL_UNIFORM_BUFFER	Uniform block storage
-    glBindBuffer(bufferType, VBO);
 
     // GL_STREAM_DRAW, GL_STREAM_READ, GL_STREAM_COPY, GL_STATIC_DRAW, GL_STATIC_READ, GL_STATIC_COPY, GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, or GL_DYNAMIC_COPY
-
-    glBufferData(bufferType, len * sizeof(float), data, usage);
+}
+unsigned int Shader::makeBufferAndBind(string objName, void *data, int datasize, int len, int bufferType, int usage)
+{
+    unsigned int obj;
+    glGenBuffers(1, &obj);
+    glBindBuffer(bufferType, obj);
+    glBufferData(bufferType, len * datasize, data, usage);
+    objs[objName] = obj;
+    return obj;
 }
 void Shader::enableVertexBuffer(int per, int stride, int index, int offset)
 {
@@ -147,10 +140,6 @@ void Shader::input(const string &filepath)
     ShaderSourceData source = readShader(filepath);
     id = createShader(source.vertex, source.fragment);
     hasShader = true;
-}
-void Shader::useShader()
-{
-    glUseProgram(id);
 }
 static unsigned int makeShader(unsigned int type, const string &str)
 {
@@ -224,4 +213,40 @@ static ShaderSourceData readShader(const string &shaderFile)
         }
     }
     return {r[ShaderType::VERTEX].str(), r[ShaderType::FRAGMENT].str()};
+}
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+TextureItem ::~TextureItem()
+{
+    if (this->data != nullptr)
+        stbi_image_free(data);
+}
+TextureItem ::TextureItem()
+{
+}
+TextureItem ::TextureItem(const string &file)
+{
+
+    readTex(file);
+}
+void TextureItem ::readTex(const string &file)
+{
+    data = stbi_load(file.c_str(), &w, &h, &chanel, 0);
+    this->file = file;
+}
+int TextureItem ::getWidth() const
+{
+    return w;
+}
+int TextureItem ::getHeight() const
+{
+    return h;
+}
+int TextureItem ::getChanel() const
+{
+    return chanel;
+}
+unsigned char *TextureItem ::getData() const
+{
+    return data;
 }

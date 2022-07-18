@@ -7,9 +7,29 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <map>
 
 using namespace std;
 
+class GLWindow;
+class Shader;
+class TextureItem
+{
+private:
+    unsigned char *data = nullptr;
+    int w = -1, h = -1, chanel = -1;
+    string file = "NULL";
+
+public:
+    ~TextureItem();
+    TextureItem();
+    TextureItem(const string &file);
+    void readTex(const string &file);
+    int getWidth() const;
+    int getHeight() const;
+    int getChanel() const;
+    unsigned char *getData() const;
+};
 class GLWindow
 {
 private:
@@ -22,6 +42,7 @@ public:
     using drawCallback = int (*)(GLFWwindow *);
     int setWindowSizeCallBack(windowSizeCallback callback);
     void createWindow(int width, int height, const char *title, GLFWmonitor *monitor = NULL, GLFWwindow *share = NULL);
+    void useShader(const Shader &sh);
     void draw(drawCallback callback);
 };
 static void enableHighVersion()
@@ -34,22 +55,19 @@ static void enableHighVersion()
 class Shader
 {
 private:
-    unsigned int id, VAO, VBO;
+    unsigned int id, VAO;
+    map<string, unsigned int> objs;
     bool hasShader = false;
 
 public:
     Shader(const string &filepath);
     Shader();
-    unsigned int getVAO();
-    unsigned int getVBO();
-    unsigned int getId();
-    void setBool(const std::string &name, bool value) const;
-    void setInt(const std::string &name, int value) const;
-    void setFloat(const std::string &name, float value) const;
-    void GenVertexBuffer(float *data, int len, int bufferType, int usage = GL_STATIC_DRAW);
+    unsigned int getVAO() const;
+    unsigned int getId() const;
+    unsigned int makeBufferAndBind(string objName, void *data, int datasize, int len, int bufferType, int usage = GL_STATIC_DRAW);
+    void GenVertexArray();
     void enableVertexBuffer(int per, int stride, int index = 0, int offset = 0);
     void input(const string &filepath);
-    void useShader();
 };
 
 #endif // !GL_DRAWER_H

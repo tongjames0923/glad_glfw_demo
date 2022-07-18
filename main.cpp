@@ -11,13 +11,14 @@
 #include <math.h>
 using namespace std;
 Shader s;
+GLWindow window;
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 int program;
-int draw(GLFWwindow *window)
+int draw(GLFWwindow *w)
 {
-    s.useShader();
+    window.useShader(s);
     float timeValue = glfwGetTime();
     float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
     int vertexColorLocation = glGetUniformLocation(program, "ourColor");
@@ -47,7 +48,7 @@ int glDraw(GLFWwindow *w)
 
 void red_triangle()
 {
-    GLWindow window;
+
     enableHighVersion();
     window.createWindow(SCR_WIDTH, SCR_HEIGHT, "opengl");
     s.input("../shaders/red_trangle.frag");
@@ -55,9 +56,9 @@ void red_triangle()
         -0.5, -0.5,
         0, 0.5,
         0.5, -0.5};
-    s.GenVertexBuffer(data, 6, GL_ARRAY_BUFFER);
+    s.GenVertexArray();
+    s.makeBufferAndBind("VBO", data, sizeof(float), 6, GL_ARRAY_BUFFER);
     s.enableVertexBuffer(2, 2);
-    s.useShader();
     window.draw(draw);
 }
 int better(GLFWwindow *w)
@@ -70,7 +71,6 @@ int better(GLFWwindow *w)
 }
 void better_triangle()
 {
-    GLWindow window;
     enableHighVersion();
     window.createWindow(SCR_WIDTH, SCR_HEIGHT, "opengl");
     s.input("../shaders/better_triangle.frag");
@@ -78,9 +78,10 @@ void better_triangle()
         -0.5, -0.5,
         0, 0.5,
         0.5, -0.5};
-    s.GenVertexBuffer(data, 6, GL_ARRAY_BUFFER);
+    s.GenVertexArray();
+    s.makeBufferAndBind("VBO", data, sizeof(float), 6, GL_ARRAY_BUFFER);
     s.enableVertexBuffer(2, 2);
-    s.useShader();
+    window.useShader(s);
     window.draw(better);
 }
 float offset[] = {
@@ -127,7 +128,6 @@ int drawScale(GLFWwindow *w)
 }
 void scaling_triangle()
 {
-    GLWindow window;
     // enableHighVersion();
     window.createWindow(SCR_WIDTH, SCR_HEIGHT, "opengl");
     // s.input("../shaders/better_triangle.frag");
@@ -140,8 +140,50 @@ void scaling_triangle()
     // s.useShader();
     window.draw(drawScale);
 }
+int drawTex(GLFWwindow *w)
+{
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    return GLWindow::DRAW_CONTINUTE;
+}
+void texdemo()
+{
+    enableHighVersion();
+    window.createWindow(SCR_WIDTH, SCR_HEIGHT, "opengl");
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // 为当前绑定的纹理对象设置环绕、过滤方式
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    TextureItem item("/Users/abstergo/Downloads/wall.jpg");
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, item.getWidth(), item.getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, item.getData());
+    glGenerateMipmap(GL_TEXTURE_2D);
+    float vertices[] = {
+        //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
+        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // 右上
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // 右下
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
+        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // 左上
+    };
+    unsigned int indices[] = {
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
+    };
+    s.input("../shaders/tex.frag");
+    s.GenVertexArray();
+    s.makeBufferAndBind("VBO", vertices, sizeof(float), 32, GL_ARRAY_BUFFER);
+    s.makeBufferAndBind("EBO", indices, sizeof(unsigned int), 6, GL_ELEMENT_ARRAY_BUFFER);
+    s.enableVertexBuffer(3, 8, 0, 0);
+    s.enableVertexBuffer(3, 8, 1, 3);
+    s.enableVertexBuffer(2, 8, 2, 6);
+
+    window.useShader(s);
+    window.draw(drawTex);
+}
 int main(int argc, char *argv[])
 {
-    scaling_triangle();
+    texdemo();
     return EXIT_SUCCESS;
 }

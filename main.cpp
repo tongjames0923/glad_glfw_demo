@@ -1,6 +1,6 @@
 
 #include "GL_Drawer.h"
-
+#include "practice.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -184,6 +184,8 @@ void texdemo()
 }
 int main(int argc, char *argv[])
 {
-    texdemo();
+    enableHighVersion();
+    window.createWindow(SCR_WIDTH, SCR_HEIGHT, "opengl");
+    drawRect(&window, 1, 1, -0.5, -0.5, 1, 1, 0);
     return EXIT_SUCCESS;
 }

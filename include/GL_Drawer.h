@@ -62,12 +62,14 @@ private:
 public:
     Shader(const string &filepath);
     Shader();
+    bool hasGenedBuffer(const string &name);
+    unsigned int getBufferIdByName(const string &name);
     unsigned int getVAO() const;
     unsigned int getId() const;
-    unsigned int makeBufferAndBind(string objName, void *data, int datasize, int len, int bufferType, int usage = GL_STATIC_DRAW);
-    void GenVertexArray();
-    void enableVertexBuffer(int per, int stride, int index = 0, int offset = 0);
-    void input(const string &filepath);
+    Shader &makeBufferAndBind(string objName, void *data, int datasize, int len, int bufferType, int usage = GL_STATIC_DRAW);
+    Shader &GenVertexArray();
+    Shader &enableVertexBuffer(int per, int stride, int index = 0, int offset = 0);
+    Shader &input(const string &filepath);
 };
 
 #endif // !GL_DRAWER_H

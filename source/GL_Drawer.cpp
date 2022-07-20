@@ -97,10 +97,11 @@ unsigned int Shader::getId() const
 {
     return id;
 }
-void Shader::GenVertexArray()
+Shader &Shader::GenVertexArray()
 {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
+    return *this;
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 
     // GL_ARRAY_BUFFER	Vertex attributes
@@ -120,26 +121,28 @@ void Shader::GenVertexArray()
 
     // GL_STREAM_DRAW, GL_STREAM_READ, GL_STREAM_COPY, GL_STATIC_DRAW, GL_STATIC_READ, GL_STATIC_COPY, GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, or GL_DYNAMIC_COPY
 }
-unsigned int Shader::makeBufferAndBind(string objName, void *data, int datasize, int len, int bufferType, int usage)
+Shader &Shader::makeBufferAndBind(string objName, void *data, int datasize, int len, int bufferType, int usage)
 {
     unsigned int obj;
     glGenBuffers(1, &obj);
     glBindBuffer(bufferType, obj);
     glBufferData(bufferType, len * datasize, data, usage);
     objs[objName] = obj;
-    return obj;
+    return *this;
 }
-void Shader::enableVertexBuffer(int per, int stride, int index, int offset)
+Shader &Shader::enableVertexBuffer(int per, int stride, int index, int offset)
 {
     glVertexAttribPointer(index, per, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *)(offset * sizeof(float)));
     glEnableVertexAttribArray(index);
+    return *this;
 }
 
-void Shader::input(const string &filepath)
+Shader &Shader::input(const string &filepath)
 {
     ShaderSourceData source = readShader(filepath);
     id = createShader(source.vertex, source.fragment);
     hasShader = true;
+    return *this;
 }
 static unsigned int makeShader(unsigned int type, const string &str)
 {
@@ -249,4 +252,19 @@ int TextureItem ::getChanel() const
 unsigned char *TextureItem ::getData() const
 {
     return data;
+}
+bool Shader::hasGenedBuffer(const string &name)
+{
+    return this->objs.count(name) == 1;
+}
+unsigned int Shader::getBufferIdByName(const string &name)
+{
+    if (hasGenedBuffer(name))
+    {
+        return this->objs[name];
+    }
+    else
+    {
+        throw runtime_error("无效索引");
+    }
 }
